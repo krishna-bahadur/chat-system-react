@@ -1,0 +1,21 @@
+.search__department > .search__form__container{
+    border:  1px solid rgba(0, 0, 0, 0.125) !important;
+    width: 30%;
+}
+.department__table thead{
+    background: #e9ecef;
+}
+.department__table .edit__icon{
+    color: #0d7a49;
+    font-size: 20px;
+    cursor: pointer;
+}
+.department .back__arrow{
+font-size: 20px;
+}
+.department__modal .modal-header{
+    background: #e9ecef;
+}
+.department__modal .modal-dialog{
+    max-width: 600px;
+}

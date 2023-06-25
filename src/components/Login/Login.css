@@ -1,0 +1,119 @@
+.logo__container > img{
+    width: 150px;
+}
+a:hover{
+    color: var(--color-bg) !important;
+}
+.login__page{
+    height: 100vh;
+}
+.login__page > .row{
+    height: 100%;
+}
+.login__image{
+    background: url(../../assets/wave.png);
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    position: relative;
+}
+.login__image > img{
+    width: 400px;
+    display: block;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+#cacaca{
+    display: none;
+}
+.login__form > img{
+    width: 80px;
+}
+.login__form__wrapper{
+    position: relative;
+}
+.login__form__wrapper > .login__form{
+    width: 400px;
+    height: fit-content;
+    display: block;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    border-radius: 1rem;
+    padding: 3rem;
+}
+
+.form-floating > i{
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    height: 100%;
+    padding: 1rem 0.75rem;
+    overflow: hidden;
+    text-align: start;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+    border: var(--bs-border-width) solid transparent;
+    transform-origin: 0 0;
+    transition: opacity .1s ease-in-out,transform .1s ease-in-out;
+    color: var(--color-bg);
+}
+.form-floating > input{
+    border: none;
+    border-bottom: 2px solid var(--color-bg);
+}
+.form-floating > input:focus{
+    border: none;
+    box-shadow: none;
+    border-bottom: 2px solid #03aa70;
+
+}
+
+.forget__password{
+    text-align: end;
+}
+.form__submit__btn > .submit__btn{
+background: var(--color-bg);
+color: var(--color-light);
+width: 100%;
+    padding: 0.5rem;
+    border-radius: 15rem;
+    font-weight: bold;
+}
+@media screen and (max-width:600px) {
+    .login__page{
+        position: relative;
+        font-size: 14px;
+    }
+    .login__image > img{
+        display:  none !important;
+    }
+    .login__form__wrapper{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+    .form__submit__btn .submit__btn{
+        border: 1px solid #fff;
+    }
+    .login__form__wrapper > .login__form{
+        width: 100% !important;
+        padding: 2rem !important;
+    }
+    .row{
+        width: 100%;
+    }
+    .logo__container > img{
+        width: 120px;
+    }
+}

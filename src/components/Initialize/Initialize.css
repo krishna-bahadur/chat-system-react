@@ -1,0 +1,48 @@
+.initialize__image{
+    height: 99vh;
+}
+.work__chat__image img{
+    width: 100%;
+    height: 100%;
+}
+.initialize__content{
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+}
+.initialize__content > h4 > span{
+    position: relative;
+}
+.initialize__content > h4 > span::after{
+    content: '';
+    background: #17d593;
+    height: 2px;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+}
+.initialize__form > h4 > span{
+    position: relative;
+    text-transform: uppercase;
+}
+.initialize__form > h4 > span::after{
+    content: '';
+    background: #17d593;
+    height: 2px;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+}
+.form__submit{
+    text-align: center;
+}
+.submit__btn{
+    background: var(--color-bg);
+    color: var(--color-light);
+    width: fit-content;
+    padding: 0.5rem 4rem;
+    border-radius: 15rem;
+    font-weight: bold;
+}

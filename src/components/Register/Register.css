@@ -1,0 +1,10 @@
+.register__form{
+    border-radius: 25px;
+    padding: 2rem !important;
+    box-shadow: rgb(40 190 138) 0px 3px 8px;
+}
+@media screen and (max-width:600px) {
+    .register__form{
+        box-shadow: none;
+    }
+}
