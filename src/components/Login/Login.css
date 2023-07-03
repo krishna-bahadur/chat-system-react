@@ -117,3 +117,12 @@ width: 100%;
         width: 120px;
     }
 }
+.forget__password button{
+background: none;
+}
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }

@@ -10,6 +10,9 @@
     font-size: 20px;
     cursor: pointer;
 }
+.department__table button{
+    background: none;
+}
 .department .back__arrow{
 font-size: 20px;
 }

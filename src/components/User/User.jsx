@@ -2,7 +2,6 @@ import { Formik, Form, Field } from 'formik'
 import React, { useEffect, useState } from 'react'
 import { IoMdAdd } from 'react-icons/io'
 import { BiSearchAlt } from 'react-icons/bi'
-import { FiEdit } from 'react-icons/fi'
 import { AiOutlineArrowLeft } from 'react-icons/ai'
 import { Modal } from 'react-bootstrap'
 import * as Yup from 'yup'
@@ -11,18 +10,30 @@ import { getAllDepartment } from '../API/Request/Department/getAllDepartments'
 import { userExists } from '../API/Request/User/userExists'
 import { userEmailExists } from '../API/Request/User/userEmailExists'
 import { createUser } from '../API/Request/User/createUser'
-import { toast } from 'react-toastify'
+import { ToastContainer, toast } from 'react-toastify'
+import { getAllUsers } from '../API/Request/User/getAllUsers'
+import { handleUserStatus } from '../API/Request/User/handleUserStatus'
 
 const User = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [roles, setRoles] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [users, setUsers] = useState([]);
+    const [totalUsers, setTotalUsers] = useState('');
+    const [idForChangeStatus, setIdForChangeStatus] = useState('');
+
     const showModal = () => {
         setIsModalOpen(true);
     }
     const hideModal = () => {
         setIsModalOpen(false);
+    }
+    const showUserModal = () => {
+        setIsUserModalOpen(true);
+    }
+    const hideUserModal = () => {
+        setIsUserModalOpen(false);
     }
     const validateUserModal = Yup.object().shape({
         username: Yup.string().required('Please enter username.'),
@@ -34,55 +45,72 @@ const User = () => {
         roleId: Yup.string().required('Please select role.'),
         departmentId: Yup.string().required('Please select department.')
     })
-    useEffect(() => {
-        getAllRoles()
+
+    const getUsers = async () => {
+        await getAllUsers()
+            .then(data => {
+                setUsers(data);
+                setTotalUsers('');
+            })
+            .catch(err => {
+                if (err.response && err.response.status === 500) {
+                    setTotalUsers('No users found.')
+                } else {
+
+                }
+            })
+    }
+
+    const getRoles = async () => {
+        await getAllRoles()
             .then(data => {
                 setRoles(data);
             })
             .catch(err => {
                 console.log("server error...")
             });
+    }
 
-        getAllDepartment()
+    const getDepartments = async () => {
+        await getAllDepartment()
             .then(data => {
                 setDepartments(data);
             })
             .catch(err => {
                 console.log("server error...");
             });
+    }
 
-        
-    }, [])
+
 
     const validateEmail = async (value) => {
         let error;
-        if(value != null && value !== ''){
-        await userEmailExists(value)
-            .then(data => {
-                if (data.exists) {
-                    error = 'Email already exists.';
-                }
-            })
-            .catch(err => {
-                console.log("Server Error");
-            })
+        if (value != null && value !== '') {
+            await userEmailExists(value)
+                .then(data => {
+                    if (data.exists) {
+                        error = 'Email already exists.';
+                    }
+                })
+                .catch(err => {
+                    console.log("Server Error");
+                })
         }
         return error;
     }
     const validateUsername = async (value) => {
         let error;
-        if(value != null && value != ''){
+        if (value != null && value !== '') {
             await userExists(value)
-            .then(data => {
-                if (data.exists) {
-                    error = 'Username already exists.';
-                }
-            })
-            .catch(err => {
-                console.log("Server Error");
-            })
+                .then(data => {
+                    if (data.exists) {
+                        error = 'Username already exists.';
+                    }
+                })
+                .catch(err => {
+                    console.log("Server Error");
+                })
         }
-        
         return error;
     }
     const handleSubmit = async (values) => {
@@ -90,15 +118,41 @@ const User = () => {
             .then(data => {
                 hideModal();
                 toast.success("User created successfully.");
+                getUsers();
             })
             .catch(err => {
                 console.log("Server Error");
             })
     }
+   
+    const  handleUserUpdate = async () => {
+        debugger;
+        await handleUserStatus(idForChangeStatus)
+        .then(data=>{
+            toast.success('User status change successfully.')
+            hideUserModal();
+            getUsers();
+            setIdForChangeStatus('');
+        })
+        .catch(err=>{
+            if(err.response && err.response.status === 500){
+                toast.error("Something went wrong.")
+            }
+            else{
+                //console.log(err.message);
+            }
+        })
+      }
+    useEffect(() => {
+        (async () => {
+            await getUsers();
+        })();
+    }, [])
 
 
     return (
         <div className='col-md department m-0 p-0'>
+            <ToastContainer />
             <div className='bg-light p-3'>
                 <div className='row'>
                     <div className='col-md'>
@@ -118,7 +172,11 @@ const User = () => {
                         </form>
                     </div>
                     <div className='col-md d-flex justify-content-end'>
-                        <button className='btn btn-success' title='Add User' onClick={() => showModal()}><IoMdAdd className='mx-1' /></button>
+                        <button className='btn btn-success' title='Add User' onClick={() => {
+                            getDepartments();
+                            getRoles();
+                            showModal()
+                        }}><IoMdAdd className='mx-1' /></button>
                     </div>
                 </div>
                 <div className='department__table my-3'>
@@ -126,57 +184,64 @@ const User = () => {
                         <thead>
                             <tr>
                                 <th>SN</th>
-                                <th>Full Name</th>
-                                <th>Email</th>
                                 <th>Username</th>
+                                <th>Email</th>
                                 <th>Department</th>
-                                <th></th>
+                                <th>Role</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Krishna Bahdur Bk</td>
-                                <td>Krishnabk651@gmail.com</td>
-                                <td>krishnabk</td>
-                                <td>HR Department</td>
-                                <td title='Edit Department' className='edit__icon'><FiEdit /></td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Krishna Bahdur Bk</td>
-                                <td>Krishnabk651@gmail.com</td>
-                                <td>krishnabk</td>
-                                <td>HR Department</td>
-                                <td title='Edit Department' className='edit__icon'><FiEdit /></td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Krishna Bahdur Bk</td>
-                                <td>Krishnabk651@gmail.com</td>
-                                <td>krishnabk</td>
-                                <td>HR Department</td>
-                                <td title='Edit Department' className='edit__icon'><FiEdit /></td>
-                            </tr>
+                            {
+                                users.map((user, index) => {
+                                    return (
+                                        <tr key={user.userId}>
+                                            <td>{index + 1}</td>
+                                            <td>{user.username}</td>
+                                            <td>{user.email}</td>
+                                            <td>{user.departmentName}</td>
+                                            <td>{user.roleName}</td>
+                                            <td>
+                                                <div className="form-check form-switch">
+                                                    <input
+                                                    className="form-check-input" 
+                                                    type="checkbox" 
+                                                    role="switch" 
+                                                    id="flexSwitchCheckChecked" 
+                                                    checked={user.isActive}
+                                                    onChange={(e) => {
+                                                        showUserModal();
+                                                        setIdForChangeStatus(user.userId);
+                                                      }} />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )
+                                })
+                            }
                         </tbody>
                     </table>
+                    {totalUsers && <p className='text-center'>{totalUsers}</p>}
                 </div>
             </div>
-            <Modal show={isModalOpen} onHide={hideModal} className='department__modal'>
-                <Modal.Header closeButton>
+
+            <Modal show={isModalOpen} className='department__modal'>
+                <Modal.Header>
                     <Modal.Title>
                         User
                     </Modal.Title>
+                    <button type='button' className="btn-close" onClick={hideModal}></button>
                 </Modal.Header>
                 <Formik
-                    initialValues={{
-                        username: '',
-                        email: '',
-                        password: '',
-                        confirmpassword: '',
-                        roleId: '',
-                        departmentId: ''
-                    }}
+                    initialValues={
+                            {
+                                username: '',
+                                email: '',
+                                password: '',
+                                confirmpassword: '',
+                                roleId: '',
+                                departmentId: ''
+                            }}
                     validationSchema={validateUserModal}
                     onSubmit={values => {
                         handleSubmit(values);
@@ -207,26 +272,26 @@ const User = () => {
                                         {errors.email && touched.email && <div className='text-danger text-start errors'>{errors.email}</div>}
                                     </div>
                                 </div>
-                                <div className='row my-4'>
-                                    <div className='col-md-6 col-sm-12'>
-                                        <label className='form-label'>Password</label>
-                                        <Field
-                                            name='password'
-                                            className='form-control'
-                                            type='password'
-                                        />
-                                        {errors.password && touched.password && <div className='text-danger text-start errors'>{errors.password}</div>}
+                                    <div className='row my-4'>
+                                        <div className='col-md-6 col-sm-12'>
+                                            <label className='form-label'>Password</label>
+                                            <Field
+                                                name='password'
+                                                className='form-control'
+                                                type='password'
+                                            />
+                                            {errors.password && touched.password && <div className='text-danger text-start errors'>{errors.password}</div>}
+                                        </div>
+                                        <div className='col-md-6 col-sm-12'>
+                                            <label className='form-label'>Confirm Password</label>
+                                            <Field
+                                                name='confirmpassword'
+                                                className='form-control'
+                                                type='password'
+                                            />
+                                            {errors.confirmpassword && touched.confirmpassword && <div className='text-danger text-start errors'>{errors.confirmpassword}</div>}
+                                        </div>
                                     </div>
-                                    <div className='col-md-6 col-sm-12'>
-                                        <label className='form-label'>Confirm Password</label>
-                                        <Field
-                                            name='confirmpassword'
-                                            className='form-control'
-                                            type='password'
-                                        />
-                                        {errors.confirmpassword && touched.confirmpassword && <div className='text-danger text-start errors'>{errors.confirmpassword}</div>}
-                                    </div>
-                                </div>
                                 <div className='row my-4'>
                                     <div className='col-md-6 col-sm-12'>
                                         <label className='form-label'>Department</label>
@@ -266,6 +331,20 @@ const User = () => {
                     )}
                 </Formik>
 
+            </Modal>
+            <Modal show={isUserModalOpen}>
+                <Modal.Header>
+                    <Modal.Title>
+                        Change Status
+                    </Modal.Title>
+                    <button type='button' className="btn-close" onClick={hideUserModal}></button>
+                </Modal.Header>
+                <Modal.Body>
+                    Are you sure to change user status ?
+                </Modal.Body>
+                <Modal.Footer>
+                    <button type='button' className='btn btn-success' onClick={()=>handleUserUpdate()}>Yes</button>
+                </Modal.Footer>
             </Modal>
         </div>
     )

@@ -10,6 +10,8 @@ import * as Yup from 'yup';
 import { createDepartment } from '../API/Request/Department/createDepartment'
 import { ToastContainer, toast } from 'react-toastify'
 import { getAllDepartment } from '../API/Request/Department/getAllDepartments'
+import { getDepartmentById } from '../API/Request/Department/getDepartmentById'
+import { editDepartment } from '../API/Request/Department/editDepartment'
 
 const ValidateDepartmentModal = Yup.object().shape({
     DepartmentName: Yup.string()
@@ -17,13 +19,15 @@ const ValidateDepartmentModal = Yup.object().shape({
     DepartmentHead: Yup.string()
         .required('Please enter department head.'),
     Phone: Yup.string()
-    .matches(/^\d{10}$/, 'Phone number must be digits')
-    .required('Please enter phone no.'),
+        .matches(/^\d{10}$/, 'Phone number must be digits')
+        .required('Please enter phone no.'),
 });
 
 const Department = () => {
-    const [isLoading, setIsLoading] = useState(true);
     const [departments, setDepartments] = useState([]);
+    const [totalDepartments, setTotalDepartments] = useState('');
+    const [isEdit, setIsEdit] = useState(false);
+    const [editData, setEditData] = useState([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -34,31 +38,80 @@ const Department = () => {
         setIsModalOpen(true);
     }
 
-    const HandleSubmit = (values) =>{
-        createDepartment(values)
-        .then(data => {
-            HideModal();
-            toast.success("Department created successfully.");
-        })
-        .catch(err =>{
-            console.log(err)
-        })
+    const HandleSubmit = async (values) => {
+        if (isEdit) {
+            await editDepartment(values)
+                .then(data => {
+                    GetAllDepartment();
+                    setIsEdit(false);
+                    HideModal();
+                    toast.success('Department updated successfully.')
+                })
+                .catch(err => {
+                    if (err.response && err.response.status === 500) {
+                        toast.error('Something went wrong')
+                    }
+                    else {
+
+                    }
+
+                })
+        } else {
+            await createDepartment(values)
+                .then(data => {
+                    GetAllDepartment();
+                    HideModal();
+                    toast.success("Department created successfully.");
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
     }
 
-    useEffect(()=>{
-        getAllDepartment()
-        .then(data=>{
-            setDepartments(data);
-            setIsLoading(false);
-        })
-        .catch(err =>{
-            console.log(err.message);
-        })
-    },[departments])
+
+
+    const GetDepartmentById = async (Id) => {
+        try {
+            setIsEdit(true);
+            const data = await getDepartmentById(Id);
+            setEditData(data);
+            ShowModal();
+        }
+        catch (err) {
+            if (err.response && err.response.status === 500) {
+                toast.error('No Department found.')
+                HideModal();
+                setIsEdit(false);
+            }
+        }
+    }
+
+    const GetAllDepartment = async () => {
+        debugger;
+        await getAllDepartment()
+            .then(data => {
+                setDepartments(data);
+                setTotalDepartments('');
+            })
+            .catch(err => {
+                if (err.response && err.response.status === 500) {
+                    setTotalDepartments("No Departments found..")
+                } else {
+                    console.log("server error....");
+                }
+            })
+    }
+
+    useEffect(() => {
+        (async () => {
+            await GetAllDepartment();
+        })();
+    }, [])
 
     return (
         <div className='col-md 1 m-0 p-0'>
-            <ToastContainer/>
+            <ToastContainer />
             <div className='bg-light p-3'>
                 <div className='row'>
                     <div className='col-md'>
@@ -78,11 +131,10 @@ const Department = () => {
                         </form>
                     </div>
                     <div className='col-md d-flex justify-content-end'>
-                        <button className='btn btn-success' title='Add Organization' onClick={()=>ShowModal()}><IoMdAdd className='mx-1' /></button>
+                        <button className='btn btn-success' title='Add Organization' onClick={() => { ShowModal() }}><IoMdAdd className='mx-1' /></button>
                     </div>
                 </div>
                 <div className='department__table my-3'>
-                    
                     <table className='table table-hover'>
                         <thead>
                             <tr>
@@ -95,44 +147,59 @@ const Department = () => {
                         </thead>
                         <tbody>
                             {
-                                departments.map((eachDepartment, index)=>{
+                                departments.map((eachDepartment, index) => {
                                     return (
-                                        <tr>
-                                        <td>{index + 1 }</td>
-                                        <td>{eachDepartment.departmentName}</td>
-                                        <td>{eachDepartment.departmentHead}</td>
-                                        <td>{eachDepartment.phone}</td>
-                                        <td title='Edit Department' className='edit__icon'><FiEdit /></td>
-                                    </tr>
+                                        <tr key={eachDepartment.departmentId}>
+                                            <td >{index + 1}</td>
+                                            <td >{eachDepartment.departmentName}</td>
+                                            <td >{eachDepartment.departmentHead}</td>
+                                            <td >{eachDepartment.phone}</td>
+                                            <td title='Edit Department' >
+                                                <button onClick={() => {
+                                                    GetDepartmentById(eachDepartment.departmentId)
+                                                }}>
+                                                    <FiEdit className='edit__icon' />
+                                                </button>
+                                            </td>
+                                        </tr>
                                     )
-                                    
+
                                 })
                             }
-                            
                         </tbody>
                     </table>
+                    {totalDepartments && <p className='text-center'>{totalDepartments}</p>}
                 </div>
             </div>
-
-            <Modal show={isModalOpen} onHide={HideModal} className='department__modal'>
-                <Modal.Header closeButton>
+            <Modal show={isModalOpen} className='department__modal'>
+                <Modal.Header>
                     <Modal.Title>
                         Department
                     </Modal.Title>
+                    <button type='button' className="btn-close" onClick={() => HideModal()}></button>
                 </Modal.Header>
                 <Formik
-                    initialValues={{
-                        DepartmentName: '',
-                        DepartmentHead: '',
-                        Phone: '',
-                        LogoFile: '',
-                    }}
+                    initialValues={
+                        isEdit && editData
+                            ? {
+                                DepartmentName: editData.departmentName || '',
+                                DepartmentHead: editData.departmentHead || '',
+                                Phone: editData.phone || '',
+                                DepartmentId: editData.departmentId || ''
+                            } : {
+                                DepartmentName: '',
+                                DepartmentHead: '',
+                                Phone: '',
+                                LogoFile: '',
+                            }
+                    }
+                    enableReinitialize={true}
                     validationSchema={ValidateDepartmentModal}
                     onSubmit={values => {
-                        HandleSubmit(values);
+                        HandleSubmit(values)
                     }}
                 >
-                    {({ errors, touched,setFieldValue }) => (
+                    {({ errors, touched, setFieldValue }) => (
                         <Form>
                             <Modal.Body>
                                 <div className='row my-4'>
@@ -189,5 +256,4 @@ const Department = () => {
         </div>
     )
 }
-
 export default Department
