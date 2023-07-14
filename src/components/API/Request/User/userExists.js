@@ -1,5 +1,5 @@
 import api from '../../api'
-export const userExists= async (value) =>{
-    const response = await api.get('/Authenticate/check-username?username='+value);
+export const userExists= async (username) =>{
+    const response = await api.get('/Authenticate/check-username/'+username);
     return response.data;
 }

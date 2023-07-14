@@ -13,7 +13,6 @@ import * as Yup from 'yup';
 import { Modal } from 'react-bootstrap'
 import { PacmanLoader } from 'react-spinners';
 
-
 const validateLoginForm = Yup.object().shape({
     username: Yup.string()
         .required('Please enter password.'),
@@ -44,7 +43,6 @@ const Login = () => {
                 body: JSON.stringify({ username, password }),
             });
             if (response.status === 401) {
-                debugger;
                 setError("Invalid username or password.");
                 // return response.json();
             }
@@ -52,6 +50,10 @@ const Login = () => {
                 const result = await response.json();
                 if (result && result.token) {
                     localStorage.setItem("token", result.token);
+                    const [header, payload, signature] = result.token.split('.');
+                    const decodedPayload = atob(payload);
+                    const { 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': role } = JSON.parse(decodedPayload);
+                    localStorage.setItem('role', role);
                     window.location.href = "/";
                 } else {
                     setError("Invalid username or password.");

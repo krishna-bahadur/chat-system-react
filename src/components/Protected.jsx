@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useLocation  } from "react-router-dom";
 
 const Protected = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const checkAuth = async () =>{
     try{
@@ -42,7 +43,7 @@ const Protected = ({ children }) => {
    
   useEffect(() => {
     checkAuth();
-  }, []);
+  });
 
   const parseJwt = (token) => {
     const base64Url = token.split('.')[1];

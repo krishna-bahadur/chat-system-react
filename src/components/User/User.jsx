@@ -47,7 +47,7 @@ const User = () => {
     })
 
     const getUsers = async () => {
-        await getAllUsers()
+        await getAllUsers('all')
             .then(data => {
                 setUsers(data);
                 setTotalUsers('');

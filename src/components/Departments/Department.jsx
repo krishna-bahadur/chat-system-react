@@ -88,7 +88,6 @@ const Department = () => {
     }
 
     const GetAllDepartment = async () => {
-        debugger;
         await getAllDepartment()
             .then(data => {
                 setDepartments(data);

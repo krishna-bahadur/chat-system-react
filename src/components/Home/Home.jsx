@@ -4,7 +4,52 @@ import { FaUsers } from 'react-icons/fa'
 import { BsFillBuildingsFill } from 'react-icons/bs'
 import { BsFillPersonLinesFill } from 'react-icons/bs'
 import DashboardImage from '../../assets/undraw_texting_re_l11n.svg'
+import { getActiveUsers } from '../API/Request/User/getActiveUsers'
+import { getAllUsers } from '../API/Request/User/getAllUsers'
+import { getAllDepartment } from '../API/Request/Department/getAllDepartments'
 const Home = () => {
+  const [totalStaffs, setTotalStaffs] = useState('0');
+  const [totalDepartments, setTotalDepartments] = useState('1');
+  const [totalActiveStaff, setTotalActiveStaffs] = useState('0');
+
+  const activeUsers = async () => {
+    await getActiveUsers()
+    .then(data=>{
+      setTotalActiveStaffs(data);
+    })
+    .catch(err=>{
+
+    })
+
+  }
+  const allUsers =async ()=>{
+    await getAllUsers('includingsuperadmin')
+    .then(data=>{
+      setTotalStaffs(data.length.toString());
+    })
+    .catch(err=>{
+      
+    })
+
+  }
+
+  const allDepartments =async ()=>{
+    await getAllDepartment()
+    .then(data=>{
+      setTotalDepartments(data.length.toString());
+    })
+    .catch(err=>{
+      
+    })
+
+  }
+useEffect(()=>{
+  (async ()=>{
+    await allDepartments();
+    await allUsers();
+    await activeUsers();
+  })();
+},[])
   return (
  
         <div className='col-md home'>
@@ -16,8 +61,8 @@ const Home = () => {
                 </div>
                 <div className="col-md total__count">
                   <div>
-                    <h1>12</h1>
-                    <p>Staffs</p>
+                    <h1>{totalStaffs}</h1>
+                    <p>Total Staffs</p>
                   </div>
                 </div>
               </div>
@@ -29,7 +74,7 @@ const Home = () => {
                 </div>
                 <div className="col-md total__count">
                   <div>
-                    <h1>12</h1>
+                    <h1>{totalDepartments}</h1>
                     <p>Departments</p>
                   </div>
                 </div>
@@ -42,7 +87,7 @@ const Home = () => {
                 </div>
                 <div className="col-md total__count">
                   <div>
-                    <h1>12</h1>
+                    <h1>{totalActiveStaff}</h1>
                     <p>Active Staffs</p>
                   </div>
                 </div>
