@@ -216,3 +216,51 @@ a:hover{
  .sidebar__user__profile .modal-header{
     background: #fff;
  }
+ .sendMessageForm{
+    position: fixed;
+    bottom: 0;
+    display: flex;
+    gap: 40px;
+    align-items: center;
+ }
+ .sendMessageForm button{
+    height: fit-content;
+ }
+ .message-container {
+    height: 100%;    
+    background-color: white;
+    overflow-y: auto;
+    border-radius: 5px;
+    margin-bottom: 2px;
+  }
+  .from-user {
+    font-size: small;
+    margin-bottom: 3px;
+    margin-right: 5px;
+  }
+  .user-message {
+    text-align: right;
+    padding-right: 5px;
+    font-size: 18px;
+  }
+  .message {
+    display: inline-flex;
+    margin: 0px auto 0px auto;
+    padding: 0px 20px;
+    font-size: 18px;
+    border-radius: 20px;
+    margin-top: 3px;
+    background: blue;
+    color: #fff;
+  }
+  /* Add appropriate styles for sent and received messages */
+.sent-message {
+    text-align: right;
+    background-color: #DCF8C6; /* Example background color for sent messages */
+  }
+  
+  .received-message {
+    text-align: left;
+    background-color: #FFFFFF; /* Example background color for received messages */
+  }
+  

@@ -20,6 +20,7 @@ const Sidebar = () => {
         setIsModalOpen(false);
     }
     const role = localStorage.getItem('role');
+    const username = localStorage.getItem('username');
 
     const navigate = useNavigate();
     const Logout = async () => {
@@ -77,7 +78,7 @@ const Sidebar = () => {
                 <Modal.Header className='border-0'>
                     <Modal.Title>
                         <img src={ChatImg} alt="user-image" className='modal__user__image' />
-                        <h5 className='m-0 pt-2'>Suman Rai</h5>
+                        <h5 className='m-0 pt-2'>{username}</h5>
                         <p className='active__time'>Last seen 5 min ago</p>
                     </Modal.Title>
                 </Modal.Header>

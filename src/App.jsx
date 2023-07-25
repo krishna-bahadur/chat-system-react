@@ -9,9 +9,7 @@ import Protected from './components/Protected'
 import Department from './components/Departments/Department';
 import User from './components/User/User';
 import Chat from './components/Chat/Chat';
-import RoutesComponents from './components/RoutesComponents/RoutesComponents';
-import ChatComponent from './components/Chat/ChatComponent';
-import ChatCom from './components/Chat/ChatCom';
+
 
 const App = () => {
 const role = localStorage.getItem('role');
@@ -25,9 +23,7 @@ const role = localStorage.getItem('role');
           <Route index element={role === 'superadmin' || role ==='admin' ? <HomePage /> : <Chat/>} />
             {role === 'superadmin' ? <Route path='/departments' element={<Department />} /> : null } 
             {role === 'superadmin' || role ==='admin' ? <Route path='/users' element={<User />} />: null}
-            <Route path='/chatapp' element={<Chat />} />          
-            <Route path='/chat' element={<ChatComponent />} />          
-            <Route path='/chatcom' element={<ChatCom />} />          
+            <Route path='/chat' element={<Chat />} />          
           </Route>
           <Route path='*' element={<NotFound/>}></Route>
         </Routes>

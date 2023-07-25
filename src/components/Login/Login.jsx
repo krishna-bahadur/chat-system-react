@@ -53,7 +53,9 @@ const Login = () => {
                     const [header, payload, signature] = result.token.split('.');
                     const decodedPayload = atob(payload);
                     const { 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': role } = JSON.parse(decodedPayload);
+                    const { 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': username } = JSON.parse(decodedPayload);
                     localStorage.setItem('role', role);
+                    localStorage.setItem('username', username);
                     window.location.href = "/";
                 } else {
                     setError("Invalid username or password.");
