@@ -19,7 +19,7 @@ const ValidateDepartmentModal = Yup.object().shape({
     DepartmentHead: Yup.string()
         .required('Please enter department head.'),
     Phone: Yup.string()
-        .matches(/^\d{10}$/, 'Phone number must be digits')
+        .matches(/^\d{10}$/, 'Phone number must be 10 digits')
         .required('Please enter phone no.'),
 });
 

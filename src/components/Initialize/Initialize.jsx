@@ -11,7 +11,7 @@ const Initialize = () => {
   const navigate = useNavigate();
   useEffect(() => {
     (async function () {
-      const response = await fetch('https://localhost:7183/api/Initialize/CheckInitialize');
+      const response = await fetch(`${BASE_URL}/Initialize/CheckInitialize`);
       const data = await response.json();
       console.log(data);
       if (!data) {

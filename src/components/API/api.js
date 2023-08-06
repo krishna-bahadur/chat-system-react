@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "https://localhost:7183/api"
+  baseURL: "https://chathubbe.hamrosystem.com/api"
+  //baseURL: "https://localhost:7183/api"
 });
 const token = localStorage.getItem("token");
 // Add an interceptor to attach the authorization header

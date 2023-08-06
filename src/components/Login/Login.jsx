@@ -12,6 +12,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { Modal } from 'react-bootstrap'
 import { PacmanLoader } from 'react-spinners';
+import BASE_URL from '../apiConfig'
 
 const validateLoginForm = Yup.object().shape({
     username: Yup.string()
@@ -35,7 +36,8 @@ const Login = () => {
     const ProceedLogin = async (values) => {
         const { username, password } = values;
         try {
-            const response = await fetch("https://localhost:7183/api/Authenticate/login", {
+            //const response = await fetch("https://chathub.hamrosystem.com/api/Authenticate/login", {
+            const response = await fetch(`${BASE_URL}/Authenticate/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -54,8 +56,12 @@ const Login = () => {
                     const decodedPayload = atob(payload);
                     const { 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role': role } = JSON.parse(decodedPayload);
                     const { 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': username } = JSON.parse(decodedPayload);
+                    const { 'depid': depid } = JSON.parse(decodedPayload);
+                    const { 'uid': uid } = JSON.parse(decodedPayload);
                     localStorage.setItem('role', role);
                     localStorage.setItem('username', username);
+                    localStorage.setItem('depid', depid);
+                    localStorage.setItem('uid', uid);
                     window.location.href = "/";
                 } else {
                     setError("Invalid username or password.");

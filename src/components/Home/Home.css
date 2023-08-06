@@ -1,12 +1,13 @@
 .sidenav__bar {
     height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100px;
 }
 .sidebar{
     border-right: 1px solid #dee2e6;
 }
-.sidebar__logo__icon{
-    margin-bottom: 30px;
-}
+
 .sidebar__logo__icon img{
     width: 80px;
 }
@@ -18,8 +19,9 @@ a:hover{
 }
 
 .chat__system{
-    height: 99vh;
-    padding: 0 5px;
+    /* height: 99vh;
+    padding: 0 5px; */
+    overflow-y: hidden;
 } 
 .logo__container{
     width: 100%;
@@ -131,12 +133,20 @@ a:hover{
     color: #b4b6b7;
     font-size: 13px;
 }
+.users__lists__container {
+background: #f8f9fa;
+}
 .chat__container{
     height: 99vh;
 }
 .scroll__auto{
     height: 76vh;
     overflow: auto;
+}
+.user_design{
+    background: #fff;
+    padding: 15px 10px;
+    border-radius: 5px;
 }
 .notfound {
     
@@ -227,7 +237,7 @@ a:hover{
     height: fit-content;
  }
  .message-container {
-    height: 100%;    
+    height: 70vh;    
     background-color: white;
     overflow-y: auto;
     border-radius: 5px;
@@ -237,6 +247,7 @@ a:hover{
     font-size: small;
     margin-bottom: 3px;
     margin-right: 5px;
+    color: #adb5bd;
   }
   .user-message {
     text-align: right;
@@ -248,19 +259,99 @@ a:hover{
     margin: 0px auto 0px auto;
     padding: 0px 20px;
     font-size: 18px;
-    border-radius: 20px;
+    border-radius: 5px;
     margin-top: 3px;
-    background: blue;
     color: #fff;
   }
   /* Add appropriate styles for sent and received messages */
 .sent-message {
     text-align: right;
-    background-color: #DCF8C6; /* Example background color for sent messages */
   }
   
+  .sent-message .message{
+    background: #28be8a;
+    max-width: 70%;
+    text-align: justify;
+  }
   .received-message {
     text-align: left;
-    background-color: #FFFFFF; /* Example background color for received messages */
   }
-  
+  .received-message .message{
+    background: #adb5bd;
+    max-width: 70%;
+    text-align: justify;
+  }
+  .message p{
+    color: #fff;
+  }
+  .menu__dot{
+    font-size: 20px;
+    color: #000;
+    align-items: center;
+  }
+  .menu__dot svg{
+    cursor: pointer;
+  }
+  .user_design {
+    cursor: pointer;
+  }
+  .send_message_form{
+    background: #dee2e6;
+  }
+  .align-middle{
+    align-items: center;
+  }
+  .send_message_form textarea{
+    width: 100%;
+    background: transparent;
+    margin: 16px 0px;
+  }
+  .send_message_form button{
+    font-size: 20px;
+  }
+  .chat__container{
+    position: relative;
+  }
+  .chat__container .message__input__container{
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+  }
+  .input__files{
+    color:#74777a;
+  }
+  .setting__comp{
+    background: #f8f9fa;
+  }
+  .user__setting__profile{
+    background: #fff;
+    border-radius: 5px;
+  }
+  hr{
+    background: #adb5bd;
+    height: 2px;
+    color: transparent;
+  }
+  .password__section ::after{
+    content: '>';
+    color: #adb5bd;
+    height: 5px;
+    position: absolute;
+    right: 0;
+
+  }
+  .cursor__pointer{
+    cursor: pointer;
+  }
+  .change__password__container input{
+    background: #f8f9fa;
+    border: none;
+
+  }
+  .change__password__container .form-floating > input:focus{
+    border: none;
+    background: #f8f9fa;
+  }
+  .user__image img{
+    object-fit: cover;
+  }

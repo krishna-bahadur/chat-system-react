@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate,useLocation  } from "react-router-dom";
+import BASE_URL from './apiConfig';
+
 
 const Protected = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -8,12 +10,13 @@ const Protected = ({ children }) => {
 
   const checkAuth = async () =>{
     try{
-      const response = await fetch('https://localhost:7183/api/Initialize/CheckInitialize');
+      const response = await fetch(`${BASE_URL}/Initialize/CheckInitialize`);
       const data = await response.json();
       if(data){
         navigate('/initialize');
       }
       else{
+
         const usertoken = localStorage.getItem("token");
         if(!usertoken || usertoken === 'undefined'){
           setIsLoggedIn(false);
