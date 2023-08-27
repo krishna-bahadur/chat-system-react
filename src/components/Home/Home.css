@@ -244,7 +244,7 @@ background: #f8f9fa;
     margin-bottom: 2px;
   }
   .from-user {
-    font-size: small;
+    font-size: 12px;
     margin-bottom: 3px;
     margin-right: 5px;
     color: #adb5bd;
@@ -257,8 +257,7 @@ background: #f8f9fa;
   .message {
     display: inline-flex;
     margin: 0px auto 0px auto;
-    padding: 0px 20px;
-    font-size: 18px;
+    padding: 2px 8px;
     border-radius: 5px;
     margin-top: 3px;
     color: #fff;
@@ -270,19 +269,22 @@ background: #f8f9fa;
   
   .sent-message .message{
     background: #28be8a;
-    max-width: 70%;
+    max-width: 80%;
     text-align: justify;
+    width: max-content;
   }
   .received-message {
     text-align: left;
   }
   .received-message .message{
     background: #adb5bd;
-    max-width: 70%;
+    max-width: 80%;
     text-align: justify;
+    width: max-content;
   }
   .message p{
     color: #fff;
+    font-size: .9em;
   }
   .menu__dot{
     font-size: 20px;
@@ -305,6 +307,7 @@ background: #f8f9fa;
     width: 100%;
     background: transparent;
     margin: 16px 0px;
+    resize: none;
   }
   .send_message_form button{
     font-size: 20px;
@@ -316,6 +319,7 @@ background: #f8f9fa;
     position: absolute;
     width: 100%;
     bottom: 0;
+    left: 0;
   }
   .input__files{
     color:#74777a;
@@ -355,3 +359,154 @@ background: #f8f9fa;
   .user__image img{
     object-fit: cover;
   }
+.chat__container__img{
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+.chat__container__width{
+  width: 90%;
+  max-width: 100%;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media screen and (max-width:600px) {
+  body{
+    font-size: 14px;
+  }
+  .chat__system{
+    position: relative;
+  }
+  .sidebar {
+    height: fit-content;
+    position: absolute;
+    overflow: hidden !important;
+    background: transparent;
+    width: 62px;
+    top: 50%;
+    right: -10px;
+    transform: translateY(-50%);
+    border-radius: 10px;
+    backdrop-filter: blur(15px);
+    border: 1px solid #e0e0e0;
+    padding: 0;
+    margin: 0;
+  }
+  .nav-item{
+    display: inline-block !important;
+  }
+
+  .sidebar .sidebar__logo__icon,
+  .bottom__profile__img {
+    display: none;
+  }
+
+  .chat__container__width {
+    width: 100%;
+  }
+
+  .sidebar ul li{
+    padding: 0 !important;
+  }
+  .sidebar ul{
+    align-items: baseline;
+  }
+ 
+  .users__lists{
+    padding:1.5rem  .5rem !important;
+  }
+  .message-container {
+    margin: 0 -20px !important;
+    padding: 5px 20px;
+  }
+  .users__lists__container{
+    margin: 0 !important;
+  }
+  .user_design {
+    margin: 10px 0 !important;
+  }
+  .user_design .col-auto{
+    padding-left: 0;
+  }
+  .message__input__container {
+    padding: 0 !important;
+  }
+  .hide__userlists{
+    display: none;
+  }
+  .chat__content {
+    margin: 0 !important;
+    padding: 0 0 .5rem 0 !important;
+  }
+  .setting__comp {
+    padding: 0 .5rem !important;
+  }
+  h4{
+    font-size: 15px !important;
+  }
+  .row {
+    margin-left: 0 !important;
+  }
+  input {
+    font-size: 14px !important; 
+  }
+  button{
+    font-size: 15px !important
+  };
+  .user__setting__profile {
+    padding: 1rem 0 !important;
+  }
+  .show__on__mobile__device{
+    display: inline-block !important;
+  }
+  .hide__on__mobile__device{
+    display: none !important;
+  }
+  .search__container{
+    margin: 0.5rem 0 !important;
+  }
+  .users__lists {
+    padding: .5rem 0 !important;
+  }
+  .message__input__container  .col-auto{
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .menu__dot button{
+    font-size: 18px;
+  }
+  .message p{
+    font-size: 14px;
+  }
+  .from-user{
+    font-size: 12px;
+  }
+  .chat__content {
+    height: 12vh;
+}
+.chat__container .message__input__container {
+  height: 10vh !important;
+}
+.message-container {
+  height: 80%;
+}.chat__content{
+  position: sticky;
+}
+}

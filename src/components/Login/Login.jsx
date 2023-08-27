@@ -12,7 +12,7 @@ import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { Modal } from 'react-bootstrap'
 import { PacmanLoader } from 'react-spinners';
-import BASE_URL from '../apiConfig'
+import {BASE_URL} from '../API/domain'
 
 const validateLoginForm = Yup.object().shape({
     username: Yup.string()

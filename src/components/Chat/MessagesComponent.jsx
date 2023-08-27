@@ -4,19 +4,20 @@ import ChatImg from '../../assets/dummy-user.jpg'
 import { CiMenuKebab } from 'react-icons/ci'
 import { BsSend } from 'react-icons/bs'
 import { AiOutlinePaperClip } from 'react-icons/ai'
-import domain from '../API/domainAPI'
+import {server} from '../API/domain'
+import {MdKeyboardBackspace} from 'react-icons/md'
+import { useNavigate } from 'react-router-dom'
+import'./Chat.css'
+import { getTimeFromDateTime } from '../Functions/Functions'
 
-
-const MessagesComponent = ({id, connection, messages, isReceiverOnline}) => {
+const MessagesComponent = ({ id, connection, messages, isReceiverOnline, setIsActive, isActive }) => {
   const [user, setUser] = useState();
   const [messageInput, setMessageInput] = useState('');
   const [receiverUsername, setReceiverUsername] = useState('');
-  const [chatHistory, setChatHistory] = useState([]);
-  console.log(isReceiverOnline);
-
   const currentUserUsername = localStorage.getItem('username');
   let depId = localStorage.getItem('depid');
   const messageContainerRef = useRef(null);
+  const navigate = useNavigate();
 
   const getUserByUserId = async () => {
     getuserById(id)
@@ -27,6 +28,27 @@ const MessagesComponent = ({id, connection, messages, isReceiverOnline}) => {
         console.log(err);
       })
   }
+  const handleFileInputChange = async (e) => {
+    e.preventDefault();
+    debugger;
+    const selectedFile = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (event) => {
+      const base64Image = event.target.result; // This is the base64-encoded image data
+      console.log(base64Image);
+
+      try {
+        // Send the base64Image directly to the backend through SignalR
+        await connection.invoke('SendMessage', currentUserUsername, receiverUsername, 'null', base64Image);
+        console.log('Image data sent to backend.');
+      } catch (error) {
+        console.log('Error sending image data to backend:', error);
+      }
+    };
+    // Read the selected file as a data URL
+    reader.readAsDataURL(selectedFile);
+  };
 
   useEffect(() => {
     getUserByUserId();
@@ -37,7 +59,6 @@ const MessagesComponent = ({id, connection, messages, isReceiverOnline}) => {
     e.preventDefault();
     if (!messageInput.trim()) return;
     try {
-      
       await connection.invoke('SendMessage', currentUserUsername, receiverUsername, messageInput);
       setMessageInput('');
     } catch (error) {
@@ -46,50 +67,65 @@ const MessagesComponent = ({id, connection, messages, isReceiverOnline}) => {
   };
 
   return (
-    <>
+    <div className={`col-md-8 col-sm-12 p-2 chat__container ${isActive ? 'show__on__mobile__device ': 'hide__on__mobile__device'}`}>
       <div className='row mt-2 chat__content border-bottom py-3 mx-2'>
-        <div className='col-md chat__top__header__section d-flex'>
-          <img 
-           src={user?.profilePictureULR ? `${domain}${user?.profilePictureULR}` : ChatImg}
-           alt="user-image" />
+        <div className='col-md col-10 chat__top__header__section d-flex'>
+          <img
+            src={user?.profilePictureULR ? `${server}${user?.profilePictureULR}` : ChatImg}
+            alt="user-image" />
           <div className='chat__user__name'>
             <div>
-              <div className='username'>{user?.username}</div>
+              <div className='username'>{user?.fullname ? user?.fullname : user?.username}</div>
               <div className='user__status'>{isReceiverOnline ? 'online' : 'offline'}</div>
             </div>
           </div>
         </div>
-        <div className='col-md d-flex justify-content-end menu__dot'>
-          <CiMenuKebab />
+        <div className='col-md col d-flex justify-content-end menu__dot mx-0 px-0'>
+          <button onClick={()=>setIsActive(false)} className='show__on__mobile__device d-none'><MdKeyboardBackspace/></button>  
+          <button className='hide__on__mobile__device d-block'><CiMenuKebab /> </button>
+          
         </div>
       </div>
       <div ref={messageContainerRef} className='scroll__auto message-container mx-5 my-2'>
         {messages.map((m, index) => {
-         if ((m.senderUsername === currentUserUsername && m.receiverUsername === receiverUsername) ||
-         (m.senderUsername === receiverUsername && m.receiverUsername === currentUserUsername)) {
+          if ((m.senderUsername === currentUserUsername && m.receiverUsername === receiverUsername) ||
+            (m.senderUsername === receiverUsername && m.receiverUsername === currentUserUsername)) {
             return (
               <div key={index} className={currentUserUsername === m.senderUsername ? 'sent-message' : 'received-message'}>
                 <div className='message'>
                   <p>{m.message}</p>
                 </div>
-                <div className='from-user'>{m.senderUsername}</div>
+                {/* <div className='from-user'>
+                  {m.senderUsername}
+                </div> */}
+                <div className='from-user'>
+                  {getTimeFromDateTime(m.datetime)}
+                </div>
+                
               </div>
             );
           }
           else {
-            return null; 
+            return null;
           }
         })}
       </div>
-      <div className='message__input__container'>
+      <div className='message__input__container px-5'>
         <form onSubmit={handleSendMessage} className='rounded-pill send_message_form px-2'>
           <div className='row align-middle'>
-            <div className='col-md-auto'>
-              <button className='btn input__files border-0 pr-0' disabled>
+            <div className='col-md-auto col-auto'>
+              <label htmlFor="fileInput" className='btn input__files border-0 pr-0'>
                 <AiOutlinePaperClip />
-              </button>
+                <input
+                  id="fileInput"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileInputChange}
+                  style={{ display: 'none' }}
+                />
+              </label>
             </div>
-            <div className='col-md col-sm col-lg p-0 d-flex'>
+            <div className='col-md col col-sm col-lg p-0 d-flex'>
               <textarea
                 rows="1"
                 placeholder='Type your message...'
@@ -97,12 +133,12 @@ const MessagesComponent = ({id, connection, messages, isReceiverOnline}) => {
                 onChange={(e) => setMessageInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
-                    handleSendMessage(e); // Call your submit function here
+                    handleSendMessage(e);
                   }
                 }}
               />
             </div>
-            <div className='col-md-auto'>
+            <div className='col-md-auto col-auto'>
               <button type='submit' className='btn btn-icon btn-success rounded-circle' disabled={!messageInput}>
                 <BsSend />
               </button>
@@ -110,11 +146,8 @@ const MessagesComponent = ({id, connection, messages, isReceiverOnline}) => {
           </div>
         </form>
       </div>
-
-
-
-    </>
-  )
+      </div>
+      )
 }
 
 export default MessagesComponent

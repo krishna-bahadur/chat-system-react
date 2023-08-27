@@ -3,7 +3,7 @@ import './Initialize.css'
 import chatImage from '../../assets/undraw_work_chat_re_qes4.svg'
 import { Formik, Form, Field } from 'formik';
 import { Modal } from 'react-bootstrap';
-import BASE_URL from '../apiConfig';
+import {BASE_URL} from '../API/domain';
 import { useNavigate } from "react-router-dom"
 import { toast, ToastContainer } from 'react-toastify'
 

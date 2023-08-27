@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom'
 const Layout = () => {
     return (
         <section className='chat__system'>
-            <div className='row'>
+            <div className='row mx-0'>
                 <Sidebar />
                 <Outlet />
             </div>

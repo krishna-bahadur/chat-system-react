@@ -11,7 +11,7 @@ import { logout } from '../API/Request/Logout/logout'
 import { useNavigate } from 'react-router-dom'
 import { Modal } from 'react-bootstrap'
 import { getuserById } from '../API/Request/User/getUserById'
-import domain from '../API/domainAPI'
+import {server} from '../API/domain'
 
 
 
@@ -40,7 +40,9 @@ const Sidebar = () => {
                 }
             })
             .catch(err => {
-                console.log(err);
+                // console.log(err);
+                // localStorage.clear();
+                // navigate('/login');
             })
     }
 
@@ -62,7 +64,7 @@ const Sidebar = () => {
     },[])
 
     return (
-        <div className="col-md-auto py-2 overflow-auto sidebar">
+        <div className="col-md-auto py-2 overflow-auto sidebar hide__on__chat__section">
             <div className="sidenav__bar d-flex flex-column text-center">
                 <Link to={'/'} className='sidebar__logo__icon'>
                     <img src={logo} alt="logo" />
@@ -92,12 +94,12 @@ const Sidebar = () => {
                         <Link state={{showSettingComp : showSettingComp}} to="/chat" className="nav-link" title="Setting"><AiFillSetting /></Link>
                     </li>
                 </ul>
-                <div>
+                <div className='bottom__profile__img'>
 
                     <button onClick={() => showModal()}>
                             
                         <img 
-                        src={user?.profilePictureULR ? `${domain}${user?.profilePictureULR}` : userImg}
+                        src={user?.profilePictureULR ? `${server}${user?.profilePictureULR}` : userImg}
                         alt="user-image" className='sidebar__user__img' />
                     </button>
                 </div>
@@ -106,7 +108,7 @@ const Sidebar = () => {
                 <Modal.Header className='border-0'>
                     <Modal.Title>
                         <img 
-                        src={user?.profilePictureULR ? `${domain}${user?.profilePictureULR}` : userImg}
+                        src={user?.profilePictureULR ? `${server}${user?.profilePictureULR}` : userImg}
                         alt="user-image" className='modal__user__image' />
                         <h5 className='m-0 pt-2'>{user?.fullname ? user?.fullname : username}</h5>
                         <p className='active__time'>Last seen 5 min ago</p>

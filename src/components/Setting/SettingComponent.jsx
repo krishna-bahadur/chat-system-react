@@ -9,7 +9,7 @@ import { Field, Form, Formik } from 'formik'
 import * as Yup from 'yup';
 import { updateUser } from '../API/Request/User/updateUser'
 import { getuserById } from '../API/Request/User/getUserById'
-import domain from '../API/domainAPI'
+import {server} from '../API/domain'
 
 const SettingComponent = () => {
     const navigate = useNavigate();
@@ -129,16 +129,16 @@ const SettingComponent = () => {
     },[showChangeProfile, profilePicture])
 
     return (
-        <div className="col-md-4 setting__comp overflow-auto p-4">
+        <div className={`col-md-4 setting__comp overflow-auto p-4 `}>
             <ToastContainer />
-            <div className='my-2'>
-                <h4>Settings</h4>
+            <div className='my-2 d-flex'>
+                <div><h4>Settings</h4></div>
             </div>
             <div className='row my-2 user__setting__profile align-middle px-2 py-3'>
-                <div className='col-md-auto '>
+                <div className='col-md-auto col-auto '>
                     <label htmlFor="profile-picture-input" className='cursor__pointer'>
                         <img
-                            src={user?.profilePictureULR ? `${domain}${user?.profilePictureULR}` : ProfilePicture}
+                            src={user?.profilePictureULR ? `${server}${user?.profilePictureULR}` : ProfilePicture}
                             alt="user-image"
                             className='sidebar__user__img'
                         />
@@ -152,7 +152,7 @@ const SettingComponent = () => {
                     />
                 </div>
 
-                <div className='col-md mx-0 px-0'>
+                <div className='col-md col mx-0 px-0'>
                     <div className='user_fullname'>
                         {user?.fullname ? user?.fullname: user?.username}
                     </div>
@@ -160,7 +160,7 @@ const SettingComponent = () => {
                         <p>{user?.email}</p>
                     </div>
                 </div>
-                <div className='col-md-auto'>
+                <div className='col-md-auto col-auto mx-0 px-0'>
                     <button onClick={() => Logout()}><p><FiLogOut /></p></button>
                 </div>
             </div>
