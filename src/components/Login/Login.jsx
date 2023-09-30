@@ -13,6 +13,8 @@ import * as Yup from 'yup';
 import { Modal } from 'react-bootstrap'
 import { PacmanLoader } from 'react-spinners';
 import {BASE_URL} from '../API/domain'
+import nepallogoimg from '../../assets/neplakolgo.png'
+import E2EE from '@chatereum/react-e2ee';
 
 const validateLoginForm = Yup.object().shape({
     username: Yup.string()
@@ -36,7 +38,6 @@ const Login = () => {
     const ProceedLogin = async (values) => {
         const { username, password } = values;
         try {
-            //const response = await fetch("https://chathub.hamrosystem.com/api/Authenticate/login", {
             const response = await fetch(`${BASE_URL}/Authenticate/login`, {
                 method: "POST",
                 headers: {
@@ -62,7 +63,17 @@ const Login = () => {
                     localStorage.setItem('username', username);
                     localStorage.setItem('depid', depid);
                     localStorage.setItem('uid', uid);
+
+                    const keys = await E2EE.getKeys();
+                    const publicKey = keys.public_key;
+                    const privateKey = keys.private_key;
+
+                    localStorage.setItem('publicKey', publicKey);
+                    localStorage.setItem('privateKey', privateKey);
+                   
                     window.location.href = "/";
+
+
                 } else {
                     setError("Invalid username or password.");
                 }
@@ -109,6 +120,8 @@ const Login = () => {
                                         <img src={avatar} alt="login_avatar" />
                                         <div className="logo__container mt-4 mb-3">
                                             <img src={logo} alt="" />
+                                            {/* <img src={nepallogoimg} alt="chat_image" /> */}
+
                                         </div>
                                         {error && <div className="text-danger">{error}</div>}
                                         <div className="form-floating my-2">

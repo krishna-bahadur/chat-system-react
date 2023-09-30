@@ -9,15 +9,29 @@ import {MdKeyboardBackspace} from 'react-icons/md'
 import { useNavigate } from 'react-router-dom'
 import'./Chat.css'
 import { getTimeFromDateTime } from '../Functions/Functions'
+import {FaVideo} from 'react-icons/fa'
+import VideoCall from '../VideoCall/VideoCall'
+import E2EE from '@chatereum/react-e2ee';
+import VideoComp from '../VideoCall/VideoComp'
 
-const MessagesComponent = ({ id, connection, messages, isReceiverOnline, setIsActive, isActive }) => {
+
+
+const MessagesComponent = ({isRejectCall, id, connection, messages, isReceiverOnline, setIsActive, isActive }) => {
   const [user, setUser] = useState();
   const [messageInput, setMessageInput] = useState('');
   const [receiverUsername, setReceiverUsername] = useState('');
   const currentUserUsername = localStorage.getItem('username');
+  const [showVideoCall, setShowVideoCall] = useState(false);
+  const [isInCall, setIsInCall] = useState(false);
   let depId = localStorage.getItem('depid');
   const messageContainerRef = useRef(null);
   const navigate = useNavigate();
+
+  const [receiver, setReceiver] = useState('');
+  const [caller, setCaller] = useState('');
+
+
+  
 
   const getUserByUserId = async () => {
     getuserById(id)
@@ -32,6 +46,8 @@ const MessagesComponent = ({ id, connection, messages, isReceiverOnline, setIsAc
     e.preventDefault();
     debugger;
     const selectedFile = e.target.files[0];
+    const fileName = selectedFile.name;
+    const fileExtension = fileName.split('.').pop();
     const reader = new FileReader();
 
     reader.onload = async (event) => {
@@ -40,7 +56,7 @@ const MessagesComponent = ({ id, connection, messages, isReceiverOnline, setIsAc
 
       try {
         // Send the base64Image directly to the backend through SignalR
-        await connection.invoke('SendMessage', currentUserUsername, receiverUsername, 'null', base64Image);
+        await connection.invoke('SendFile', currentUserUsername, receiverUsername, base64Image, fileName, fileExtension);
         console.log('Image data sent to backend.');
       } catch (error) {
         console.log('Error sending image data to backend:', error);
@@ -50,16 +66,32 @@ const MessagesComponent = ({ id, connection, messages, isReceiverOnline, setIsAc
     reader.readAsDataURL(selectedFile);
   };
 
+  const toggleVideoCall = async () => {
+    setShowVideoCall(true);
+  };
+
+  connection?.on('IncomingCall', (caller, receiver) => {
+    //showIncomingCallModal();
+    setReceiver(receiver);
+    setCaller(caller);
+    setIsInCall(true);
+});
+
   useEffect(() => {
-    getUserByUserId();
-    messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+      getUserByUserId();
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
   }, [id, messages])
+
+  
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!messageInput.trim()) return;
     try {
-      await connection.invoke('SendMessage', currentUserUsername, receiverUsername, messageInput);
+      const public_key = localStorage.getItem('publicKey');
+      const encrypted = await E2EE.encrypt(public_key, messageInput);
+      const encryptedCipher = JSON.stringify(encrypted);
+      await connection.invoke('SendMessage', currentUserUsername, receiverUsername, encryptedCipher, messageInput);
       setMessageInput('');
     } catch (error) {
       console.log(error);
@@ -81,6 +113,7 @@ const MessagesComponent = ({ id, connection, messages, isReceiverOnline, setIsAc
           </div>
         </div>
         <div className='col-md col d-flex justify-content-end menu__dot mx-0 px-0'>
+          <button className='d-block mx-5 video__call__icon' title='Video Call' onClick={()=>toggleVideoCall()}><FaVideo /> </button>
           <button onClick={()=>setIsActive(false)} className='show__on__mobile__device d-none'><MdKeyboardBackspace/></button>  
           <button className='hide__on__mobile__device d-block'><CiMenuKebab /> </button>
           
@@ -93,7 +126,9 @@ const MessagesComponent = ({ id, connection, messages, isReceiverOnline, setIsAc
             return (
               <div key={index} className={currentUserUsername === m.senderUsername ? 'sent-message' : 'received-message'}>
                 <div className='message'>
+                  {m.isFile ? <img/> :
                   <p>{m.message}</p>
+                  }
                 </div>
                 {/* <div className='from-user'>
                   {m.senderUsername}
@@ -146,6 +181,9 @@ const MessagesComponent = ({ id, connection, messages, isReceiverOnline, setIsAc
           </div>
         </form>
       </div>
+
+      {showVideoCall && <VideoComp connection={connection}/>}
+      {/* {showVideoCall  && <VideoCall isInCall={isInCall} callerUsername={currentUserUsername} receiverUsername={receiverUsername} connection={connection} />} */}
       </div>
       )
 }

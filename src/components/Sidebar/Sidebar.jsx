@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import userImg from '../../assets/dummy-user.jpg'
+// import logo from '../../assets/neplakolgo.png'
 import logo from '../../assets/chathub.png'
 import { AiFillHome } from 'react-icons/ai'
 import { RiBuilding4Fill } from 'react-icons/ri'

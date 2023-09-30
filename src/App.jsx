@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route  } from 'react-router-dom';
-import React from 'react'
+import React, { useEffect } from 'react'
 import Login from './components/Login/Login'
 import HomePage from './components/Home/Home';
 import Initialize from './components/Initialize/Initialize';
@@ -9,9 +9,14 @@ import Protected from './components/Protected'
 import Department from './components/Departments/Department';
 import User from './components/User/User';
 import Chat from './components/Chat/Chat';
+import sodium from 'libsodium-wrappers';
 
 
 const App = () => {
+  useEffect(() => {
+    sodium.ready.then(() => {
+    });
+  }, []);
 const role = localStorage.getItem('role');
 
   return (

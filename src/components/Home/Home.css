@@ -368,8 +368,26 @@ background: #f8f9fa;
   width: 90%;
   max-width: 100%;
 }
+.video__call__icon > svg{
+  color: #046242;
+}
+.video__call__component_modal .modal-dialog {
+  max-width: 90%;
+  max-height: 90vh;
+}
+.video__call__component_modal .modal-content{
+ color: #fff !important;
+}
+.video__call__component_modal video{
+  width: 100%;
+}
+.video__call__component_modal h3{
+  color: #000;
+  position: absolute;
+  top: 50%;
+  left: 33%;
 
-
+}
 
 
 
