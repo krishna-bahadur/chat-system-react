@@ -387,8 +387,16 @@ background: #f8f9fa;
   top: 50%;
   left: 33%;
 
-}
 
+}
+.chat__file{
+  width: 300px;
+  height: 400px;
+  object-fit: cover;
+}
+.file_message{
+  background: none !important;
+}
 
 
 

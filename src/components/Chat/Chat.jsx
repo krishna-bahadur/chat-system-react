@@ -69,9 +69,22 @@ const Chat = () => {
             .build();
 
         connection.on('ReceiveMessage', async (senderUsername, receiverUsername, EncryptedMessage, message, datetime, isFile) => {
-            if(EncryptedMessage){
-                if (currentUserUsername === senderUsername) {
-                    const receiverPrivateKey = localStorage.getItem('privateKey');
+            debugger;
+            if (currentUserUsername === senderUsername) {
+                const receiverPrivateKey = localStorage.getItem('privateKey');
+                const encrypted = JSON.parse(EncryptedMessage);
+                const decrypted = await E2EE.decrypt(
+                    encrypted.aes_key,
+                    encrypted.iv,
+                    receiverPrivateKey,
+                    encrypted.cipher_text
+                );
+                message = decrypted;
+
+            }
+            if (currentUserUsername === receiverUsername) {
+                const receiverPrivateKey = await connection.invoke("GetKey", senderUsername);
+                if (receiverPrivateKey) {
                     const encrypted = JSON.parse(EncryptedMessage);
                     const decrypted = await E2EE.decrypt(
                         encrypted.aes_key,
@@ -80,32 +93,16 @@ const Chat = () => {
                         encrypted.cipher_text
                     );
                     message = decrypted;
-    
-                }
-                if (currentUserUsername === receiverUsername) {
-                    const receiverPrivateKey = await connection.invoke("GetKey", senderUsername);
-                    if (receiverPrivateKey) {
-                        const encrypted = JSON.parse(EncryptedMessage);
-                        const decrypted = await E2EE.decrypt(
-                            encrypted.aes_key,
-                            encrypted.iv,
-                            receiverPrivateKey,
-                            encrypted.cipher_text
-                        );
-                        message = decrypted;
-                    } 
-    
-    
                 }
             }
 
-                getAllUserByDepId();
-                setMessages(messages => [...messages, { senderUsername, receiverUsername, message, datetime, isFile }])
-                if (currentUserUsername === receiverUsername) {
-                    // playNotificationSound();
-                    showNotification(senderUsername + ' send message.', message);
-                }
-            
+            getAllUserByDepId();
+            setMessages(messages => [...messages, { senderUsername, receiverUsername, message, datetime, isFile }])
+            if (currentUserUsername === receiverUsername) {
+                // playNotificationSound();
+                showNotification(senderUsername + ' send message.', message);
+            }
+
         });
 
         if (connection.state === "Connected") {
@@ -136,7 +133,7 @@ const Chat = () => {
         setReceiver(receiver);
         setCaller(caller);
     });
-    connection?.on('ReceiveStartVideoChat',() => {
+    connection?.on('ReceiveStartVideoChat', () => {
         setIncomingCall(true);
     });
 
@@ -160,11 +157,12 @@ const Chat = () => {
         if (currentUserUsername && receiverUsername) {
             await getPrivateChatMessages(currentUserUsername, receiverUsername)
                 .then(data => {
+                    console.log(data);
                     setMessages([]);
                     data.forEach(m => {
                         setMessages(messages => [
                             ...messages,
-                            { senderUsername: m.senderUsername, receiverUsername: m.receiverUsername, message: m.messages, datetime: m.dateTime}
+                            { senderUsername: m.senderUsername, receiverUsername: m.receiverUsername, message: m.messages, datetime: m.dateTime, isFile:  m.isFile }
                         ]);
                     });
                 })
@@ -264,11 +262,23 @@ const Chat = () => {
                                                             </div>
                                                             <div className="user__message">
                                                                 <div className="line-clamp">
-                                                                    {latestMessage?.senderUsername === user.username || latestMessage?.receiverUsername === user.username ? latestMessage.message : user?.lastMessage}
+                                                                    {latestMessage?.senderUsername === user.username || latestMessage?.receiverUsername === user.username ? 
+                                                                    (
+                                                                        latestMessage.message.includes("Images\\") ? (
+                                                                            'FILE'
+                                                                          ) : (
+                                                                            latestMessage?.message
+                                                                          )
+                                                                    )
+                                                                         : (
+                                                                        user?.lastMessage.includes("Images\\") ? (
+                                                                            'FILE'
+                                                                          ) : (
+                                                                            user?.lastMessage
+                                                                          )
+                                                                    )
+                                                                    }
                                                                 </div>
-                                                                {/* <div className="badge">
-                                                  <span></span>
-                                              </div> */}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -302,7 +312,6 @@ const Chat = () => {
                                                                 </div>
                                                                 <div className="user__message">
                                                                     <div className="line-clamp">
-                                                                        {console.log(latestMessage)}
                                                                         {latestMessage?.senderUsername === user.username || latestMessage?.receiverUsername === user.username ? latestMessage.message : null}
                                                                     </div>
                                                                     {/* <div className="badge">
@@ -347,9 +356,9 @@ const Chat = () => {
                 </Modal>
             } */}
 
-      { receiver===currentUserUsername && <VideoCall isInCall={isInCall} callerUsername={caller} receiverUsername={receiver} connection={connection}  />}
-    
-      {incomingCall && <VideoComp connection={connection}/>}
+            {receiver === currentUserUsername && <VideoCall isInCall={isInCall} callerUsername={caller} receiverUsername={receiver} connection={connection} />}
+
+            {incomingCall && <VideoComp connection={connection} />}
         </div>
     )
 }
