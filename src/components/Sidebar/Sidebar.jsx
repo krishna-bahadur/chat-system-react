@@ -86,7 +86,7 @@ const Sidebar = () => {
                             <Link to="/users" className="nav-link" title="Users"><FaUsers /></Link>
                         </li>
                     ) : null}
-                    {role === 'superadmin' || role === 'admin' || role === 'user' ? (
+                    {role === 'admin' || role === 'user' ? (
                         <li className="nav-item py-4">
                             <Link  to="/chat" className="nav-link" title="Chat"><BsFillChatLeftFill /></Link>
                         </li>

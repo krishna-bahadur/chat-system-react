@@ -14,6 +14,7 @@ import VideoCall from '../VideoCall/VideoCall'
 import E2EE from '@chatereum/react-e2ee';
 import VideoComp from '../VideoCall/VideoComp'
 import { saveFile } from '../API/Request/Chat/saveFile'
+import {BsDownload} from 'react-icons/bs'
 
 
 
@@ -85,7 +86,7 @@ const MessagesComponent = ({ isRejectCall, id, connection, messages, isReceiverO
     const selectedFile = e.target.files[0];
     try {
       const data = await saveFile(selectedFile, currentUserUsername, receiverUsername);
-      if(data){
+      if (data) {
         const public_key = localStorage.getItem('publicKey');
         const encrypted = await E2EE.encrypt(public_key, data);
         const encryptedCipher = JSON.stringify(encrypted);
@@ -128,9 +129,18 @@ const MessagesComponent = ({ isRejectCall, id, connection, messages, isReceiverO
             return (
               <div key={index} className={currentUserUsername === m.senderUsername ? 'sent-message' : 'received-message'}>
                 <div className={m.isFile ? 'file_message message' : 'message'}>
-                  {m.isFile ? <img src={`${server}${m.message}`} className='chat__file'/> :
-                    <p>{m.message}</p>
-                  }
+                  {m.isFile ? (
+                    m.message.toLowerCase().endsWith('.pdf') || m.message.toLowerCase().endsWith('.doc') || m.message.toLowerCase().endsWith('.pptx') || m.message.toLowerCase().endsWith('.docx') ? (
+                      <a className='download__file' href={`${server}${m.message}`} target="_blank" rel="noopener noreferrer" download>
+                        <BsDownload /> {m.message.replace(/^Images\\/i, '')}
+                      </a>
+                    ) : m.message.toLowerCase().match(/\.(jpeg|jpg|png|gif|bmp)$/i) ? (
+                      <img src={`${server}${m.message}`} alt="Image" className="chat__image" />
+                    ) : (
+                      null
+                    )
+                  ) : <p>{m.message}</p>}
+
                 </div>
                 {/* <div className='from-user'>
                   {m.senderUsername}
@@ -156,7 +166,6 @@ const MessagesComponent = ({ isRejectCall, id, connection, messages, isReceiverO
                 <input
                   id="fileInput"
                   type="file"
-                  accept="image/*"
                   onChange={handleFileInputChange}
                   style={{ display: 'none' }}
                 />
@@ -170,7 +179,7 @@ const MessagesComponent = ({ isRejectCall, id, connection, messages, isReceiverO
                 onChange={(e) => {
                   setMessageInput(e.target.value);
                   setIsFile(true);
-              }
+                }
                 }
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {

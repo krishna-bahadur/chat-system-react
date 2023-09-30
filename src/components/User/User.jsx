@@ -13,21 +13,33 @@ import { createUser } from '../API/Request/User/createUser'
 import { ToastContainer, toast } from 'react-toastify'
 import { getAllUsers } from '../API/Request/User/getAllUsers'
 import { handleUserStatus } from '../API/Request/User/handleUserStatus'
+import {FiEdit} from 'react-icons/fi'
+import { getuserById } from '../API/Request/User/getUserById'
+import { updateUserBySuperadmin } from '../API/Request/User/updateUserBySuperadmin'
 
 const User = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [roles, setRoles] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [users, setUsers] = useState([]);
     const [totalUsers, setTotalUsers] = useState('');
     const [idForChangeStatus, setIdForChangeStatus] = useState('');
+    const [editData, setEditData] = useState([]);
+
 
     const showModal = () => {
         setIsModalOpen(true);
     }
     const hideModal = () => {
         setIsModalOpen(false);
+    }
+    const showEditModal = () => {
+        setIsEditModalOpen(true);
+    }
+    const hideEditModal = () => {
+        setIsEditModalOpen(false);
     }
     const showUserModal = () => {
         setIsUserModalOpen(true);
@@ -38,7 +50,8 @@ const User = () => {
     const validateUserModal = Yup.object().shape({
         username: Yup.string().required('Please enter username.'),
         email: Yup.string().email('Invalid email').required('Please enter email.'),
-        password: Yup.string().required('Please enter password.'),
+        password: Yup.string().required('Please enter password.')
+        .min(5, 'Password must be at least 5 characters long'),
         confirmpassword: Yup.string()
             .oneOf([Yup.ref('password'), null], 'Password does not match.')
             .required('Please enter confirm password.'),
@@ -81,8 +94,6 @@ const User = () => {
             });
     }
 
-
-
     const validateEmail = async (value) => {
         let error;
         if (value != null && value !== '') {
@@ -124,9 +135,20 @@ const User = () => {
                 console.log("Server Error");
             })
     }
+    
+    const handleSubmitForEdit = async (values) => {
+        await updateUserBySuperadmin(values)
+            .then(data => {
+                hideEditModal();
+                toast.success("User updated successfully.");
+                getUsers();
+            })
+            .catch(err => {
+                console.log("Server Error");
+            })
+    }
    
     const  handleUserUpdate = async () => {
-        debugger;
         await handleUserStatus(idForChangeStatus)
         .then(data=>{
             toast.success('User status change successfully.')
@@ -143,6 +165,18 @@ const User = () => {
             }
         })
       }
+
+      const getUserByUserId = async (Id) =>{
+        try{
+            const data = await getuserById(Id);
+            setEditData(data);
+            showEditModal();
+            console.log(data);
+        }catch(err){
+            console.log('Error on getuserbyId :' + err);
+        }
+      }
+
     useEffect(() => {
         (async () => {
             await getUsers();
@@ -189,6 +223,7 @@ const User = () => {
                                 <th>Department</th>
                                 <th>Role</th>
                                 <th>Status</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -214,6 +249,15 @@ const User = () => {
                                                         setIdForChangeStatus(user.userId);
                                                       }} />
                                                 </div>
+                                            </td>
+                                            <td title='Edit User' >
+                                                <button onClick={() => {
+                                                     getRoles();
+                                                     getDepartments();
+                                                    getUserByUserId(user.userId)
+                                                }}>
+                                                    <FiEdit className='edit__icon' />
+                                                </button>
                                             </td>
                                         </tr>
                                     )
@@ -332,6 +376,100 @@ const User = () => {
                 </Formik>
 
             </Modal>
+
+            <Modal show={isEditModalOpen} className='department__modal'>
+                <Modal.Header>
+                    <Modal.Title>
+                        User Update
+                    </Modal.Title>
+                    <button type='button' className="btn-close" onClick={hideEditModal}></button>
+                </Modal.Header>
+                <Formik
+                    initialValues={
+                            {
+                                username: editData.username,
+                                email: editData.email,
+                                roleId: editData.roleId,
+                                departmentId: editData.departmentId,
+                                userId:editData.userId,
+                            }}
+                    onSubmit={values => {
+                        handleSubmitForEdit(values);
+                    }}
+                >
+                    {({ errors, touched, setFieldValue, value }) => (
+                        <Form>
+                            <Modal.Body>
+                                <div className='row my-4'>
+                                    <div className='col-md-6 col-sm-12'>
+                                        <label className='form-label'>Username</label>
+                                        <Field
+                                            name='username'
+                                            className='form-control'
+                                            type='text'
+                                            readOnly
+                                        />
+                                        {errors.username && touched.username && <div className='text-danger text-start errors'>{errors.username}</div>}
+                                    </div>
+                                    <div className='col-md-6 col-sm-12'>
+                                        <label className='form-label'>Email</label>
+                                        <Field
+                                            name='email'
+                                            className='form-control'
+                                            type='text'
+                                            readOnly
+                                        />
+                                        {errors.email && touched.email && <div className='text-danger text-start errors'>{errors.email}</div>}
+                                    </div>
+                                </div>
+                                <div className='row my-4'>
+                                    <div className='col-md-6 col-sm-12'>
+                                        <label className='form-label'>Department</label>
+                                        <Field
+                                            as='select'
+                                            name='departmentId'
+                                            className='form-select'
+                                            onChange={(e) => {
+                                                const selectedValue = e.target.value;
+                                                setFieldValue('departmentId', selectedValue);
+                                            }}
+                                        >
+                                            <option>-- select department --</option>
+                                            {departments.map(department => (
+                                                <option key={department.departmentId} value={department.departmentId}>{department.departmentName}</option>
+                                            ))}
+                                        </Field>
+                                        {errors.departmentId && touched.departmentId && <div className='text-danger text-start errors'>{errors.departmentId}</div>}
+                                    </div>
+                                    <div className='col-md-6 col-sm-12'>
+                                        <label className='form-label'>Role</label>
+                                        <Field
+                                            as='select'
+                                            name='roleId'
+                                            className='form-select'
+                                            onChange={(e) => {
+                                                const selectedValue = e.target.value;
+                                                setFieldValue('roleId', selectedValue);
+                                            }}
+                                        >
+                                            <option>-- select role --</option>
+                                            {roles.map(role => (
+                                                <option key={role.roleId} value={role.roleId}>{role.roleName}</option>
+                                            ))}
+                                        </Field>
+                                        {errors.roleId && touched.roleId && <div className='text-danger text-start errors'>{errors.roleId}</div>}
+                                    </div>
+                                </div>
+
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <button type='submit' className='btn btn-success'>save</button>
+                            </Modal.Footer>
+                        </Form>
+                    )}
+                </Formik>
+            </Modal>
+
             <Modal show={isUserModalOpen}>
                 <Modal.Header>
                     <Modal.Title>

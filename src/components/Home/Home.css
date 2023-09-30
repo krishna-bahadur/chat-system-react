@@ -397,7 +397,15 @@ background: #f8f9fa;
 .file_message{
   background: none !important;
 }
-
+.download__file{
+  background: #28be8a;
+  border-radius: 5px;
+  padding: 10px;
+}
+.download__file:hover {
+  text-decoration: none !important; 
+  color: black !important; 
+}
 
 
 
